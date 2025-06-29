@@ -18,30 +18,29 @@ public class TaskManager {
         String lastTaskNumber = null;
         String[][] tasksSplitArr;
 
-        if (Files.exists(path)) {
-            try {
-                String line = Files.readString(path);
-                String[] eachTask = line.split("\n");
-                tasksSplitArr = new String[eachTask.length][];
-                for (int i = 0; i < eachTask.length; i++) {
-                    tasksSplitArr[i] = eachTask[i].split("\\s*:\\s*|\\s*,\\s*");
-                }
-                lastTaskNumber = tasksSplitArr[eachTask.length - 1][0].trim();
-                System.out.println(lastTaskNumber);
-                for (int i = 0; i < tasksSplitArr.length; i++) {
-                    for (int j = 0; j < tasksSplitArr[i].length; j++) {
-                        System.out.print(tasksSplitArr[i][j] + " ");
-                    }
-                    System.out.println();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                tasksSplitArr = new String[0][0];
+        try {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+                System.out.println("File created: " + path);
             }
-        } else {
-            System.out.println("File not found");
-            tasksSplitArr = new String[0][];
+            if (Files.size(path) == 0) {
+                lastTaskNumber = "-1";
+                tasksSplitArr = new String[0][0];
+
+            } else {
+                String line = Files.readString(path);
+                String[] taskOneLine = line.split("\n");
+                tasksSplitArr = new String[taskOneLine.length][];
+                for (int i = 0; i < taskOneLine.length; i++) {
+                    tasksSplitArr[i] = taskOneLine[i].split("\\s*:\\s*|\\s*,\\s*");
+                }
+                lastTaskNumber = tasksSplitArr[taskOneLine.length - 1][0];
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            tasksSplitArr = new String[0][0];
         }
+
 
         Scanner scanner = new Scanner(System.in);
 
@@ -77,32 +76,36 @@ public class TaskManager {
                     break;
 
                 case "remove":
-                    System.out.println("Please select number to remove task");
-                    String numberToRemove = null;
-                    while (true) {
-                        numberToRemove = scanner.nextLine();
-                        try {
-                            int number = Integer.parseInt(numberToRemove);
-                            int lastNumber = Integer.parseInt(lastTaskNumber);
-                            if (number <= lastNumber && number >= 0) {
-                                break;
-                            } else {
+                    if (tasksSplitArr.length >= 1) {
+                        System.out.println("Please select number to remove task");
+                        String numberToRemove = null;
+                        while (true) {
+                            numberToRemove = scanner.nextLine();
+                            try {
+                                int number = Integer.parseInt(numberToRemove);
+                                int lastNumber = Integer.parseInt(lastTaskNumber);
+                                if (number <= lastNumber && number >= 0) {
+                                    break;
+                                } else {
+                                    System.out.println("Please input a valid number from range 0 to " + (lastTaskNumber));
+                                }
+                            } catch (NumberFormatException e) {
                                 System.out.println("Please input a valid number from range 0 to " + (lastTaskNumber));
                             }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Please input a valid number from range 0 to " + (lastTaskNumber));
                         }
-                    }
-                    for (int i = 0; i < tasksSplitArr.length; i++) {
-                        for (int j = 0; j < tasksSplitArr[i].length; j++) {
-                            if (tasksSplitArr[i][0].equals(numberToRemove)) {
-                                System.out.println("Task " + numberToRemove + " was successfully deleted.");
-                                tasksSplitArr = ArrayUtils.remove(tasksSplitArr, i);
-                                break;
+                        for (int i = 0; i < tasksSplitArr.length; i++) {
+                            for (int j = 0; j < tasksSplitArr[i].length; j++) {
+                                if (tasksSplitArr[i][0].equals(numberToRemove)) {
+                                    System.out.println("Task " + numberToRemove + " was successfully deleted.");
+                                    tasksSplitArr = ArrayUtils.remove(tasksSplitArr, i);
+                                    break;
+                                }
                             }
                         }
-
+                    } else {
+                        System.out.println("No tasks on the list");
                     }
+
 
                     break;
                 case "list":
