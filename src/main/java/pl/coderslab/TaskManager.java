@@ -56,7 +56,6 @@ public class TaskManager {
                 case "add":
                     int numberInt = Integer.parseInt(lastTaskNumber) + 1;
                     lastTaskNumber = String.valueOf(numberInt);
-                    System.out.println("Add task");
                     System.out.println("Please add task description");
                     String description = scanner.nextLine();
                     System.out.println("Please add task due date");
@@ -69,12 +68,9 @@ public class TaskManager {
                     }
                     System.out.print(ConsoleColors.RESET);
                     String[] oneTask = {lastTaskNumber, description, dueDate, isImportant};
-                    System.out.println(Arrays.toString(oneTask));
-                    System.out.println(lastTaskNumber + " " + description + " " + dueDate + " " + isImportant);
                     tasksSplitArr = Arrays.copyOf(tasksSplitArr, tasksSplitArr.length + 1);
                     tasksSplitArr[tasksSplitArr.length - 1] = oneTask;
                     break;
-
                 case "remove":
                     if (tasksSplitArr.length >= 1) {
                         System.out.println("Please select number to remove task");
@@ -105,8 +101,6 @@ public class TaskManager {
                     } else {
                         System.out.println("No tasks on the list");
                     }
-
-
                     break;
                 case "list":
                     System.out.println("Tasks on list:");
@@ -123,15 +117,14 @@ public class TaskManager {
                         }
                         sb.append("\n");
                     }
-                    System.out.println(sb.toString());
+                    System.out.println(sb);
                     break;
-
                 case "exit":
                     StringBuilder sbToFile = new StringBuilder();
                     for (int i = 0; i < tasksSplitArr.length; i++) {
                         for (int j = 0; j < tasksSplitArr[i].length; j++) {
                             if (j == 0) {
-                                sbToFile.append(String.valueOf(i) + " : ");
+                                sbToFile.append(i + " : ");
                             } else if (j == tasksSplitArr[i].length - 1) {
                                 sbToFile.append(tasksSplitArr[i][j]);
                             } else {
@@ -140,7 +133,6 @@ public class TaskManager {
                         }
                         sbToFile.append("\n");
                     }
-
                     try {
                         Files.writeString(path, sbToFile.toString());
                     } catch (IOException e) {
